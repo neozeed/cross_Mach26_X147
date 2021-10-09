@@ -269,5 +269,4 @@ copy old\hd.o
 copy old\kd.o
 copy old\kdasm.o
 copy old\kd_event.o
-copy old\vmunix.swap
 call ll.cmd
