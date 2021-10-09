@@ -1,0 +1,63 @@
+ident		CMU
+options		GENERIC
+options		INET
+options		DLI
+options		SYSV_COFF
+options		BSD_A_OUT
+options 	MACH
+options		MACH_COMPAT
+options		MACH_DEBUG
+options		MACH_FASTLINK
+options		MACH_IPC_SIGHACK
+options		MACH_IPC_TCACHE
+options		MACH_IPC_XXXHACK
+options 	MACH_KDB
+options 	MACH_RFS
+options		MACH_NET
+options		MACH_XP
+options		STAT_TIME
+maxdsiz		33554432
+maxusers	16
+pseudo-device	cpus		1
+pseudo-device	cmupty
+pseudo-device	ether
+pseudo-device	inet
+pseudo-device	sl
+pseudo-device	loop
+pseudo-device	pty	128
+machine		"i386"
+cpu		"AT386"
+options		"AT386"
+config		vmunix		swap generic
+options 	MACH_LOAD
+controller	aha0
+disk		sd0	at sc0 flags 0 drive 0
+disk		sd1	at sc0 flags 0 drive 1
+pseudo-device	"at3c501"
+device		com0
+device		com1
+device		com2
+device		com3
+device		lpr0
+pseudo-device	"par" 1
+device		fd0
+device		fd1
+pseudo-device	fp
+device		hd0
+device		hd1
+pseudo-device	mouse
+pseudo-device	"pc586"
+pseudo-device	"ns8390"
+device		wt0
+makevariables	GAS="	gas"
+makevariables	LDFLAGS="-e _pstart -T c0100000"
+makevariables	SWAPSYS="@"
+makevariables	VOLATILE=
+makevariables	FORCE_VOLATILE="-fvolatile "
+makevariables	"C_RULE_1A"="${KCC} -c ${CFLAGS} -fno-function-cse "
+makevariables	"C_RULE_2"=
+makevariables	"C_RULE_3"=
+makevariables	"C_RULE_4"=
+timezone	5 dst
+options		CMUCS
+options		CMUCS_DISK

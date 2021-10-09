@@ -1,0 +1,1 @@
+#define NMOUSE 1

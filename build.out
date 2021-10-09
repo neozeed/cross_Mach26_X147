@@ -1,0 +1,199 @@
+cd obj
+[ generating STD+WS-afs-nfs/make ]
+[ generating STD+WS-afs-nfs/Makeconf ]
+[ generating STD+WS-afs-nfs/STD+WS-afs-nfs from conf/MASTER{,.i386}{,.local} ]
+[ generating STD+WS-afs-nfs/Makefile.top-level ]
+yacc -d ../../../src/config/config.y
+mv  y.tab.c config.c
+cc -c     -DCMU   -O config.c
+lex ../../../src/config/config.l
+cc -c     -DCMU   -O lex.yy.c
+cc -c     -DCMU   -O ../../../src/config/main.c
+cc -c     -DCMU   -O ../../../src/config/mkioconf.c
+cc -c     -DCMU   -O ../../../src/config/mkmakefile.c
+cc -c     -DCMU   -O ../../../src/config/mkglue.c
+cc -c     -DCMU   -O ../../../src/config/mkheaders.c
+cc -c     -DCMU   -O ../../../src/config/mkswapconf.c
+cc    -o config.out  config.o lex.yy.o main.o mkioconf.o mkmakefile.o  mkglue.o mkheaders.o mkswapconf.o -ll -lcs
+mv config.out config
+[ configuring in STD+WS-afs-nfs ]
+../src/config/config -c ../conf  STD+WS-afs-nfs
+[ making STD+WS-afs-nfs ]
+rm -rf ./mach
+mkdir ./mach
+cp -p ../../mach/std_types.defs  ../../mach/mach_types.defs  ../../mach/mach.defs  ../../mach/mach_host.defs  ../../mach/exc.defs  ../../mach/memory_object.defs  ../../mach/memory_object_default.defs  ../../mach/device_types.defs  ../../mach/device.defs  ../../mach/monitor.defs ./mach/
+cp -p ../../mach/Makefile ./mach/
+cd ./mach && make && touch ../migfiles
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -DKERNEL_SERVER -i -server mach_server.c -header mach_interface.h mach.defs
+egrep 'Routine ' < mach_interface.h | sed -e 's/.*Routine \([a-z_]*\).*/#define \1 \1_EXTERNAL/' > mach_user_internal.h
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -DKERNEL_USER -header memory_object_user.h -user memory_object_user.c -server memory_object_server.c memory_object.defs
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -DKERNEL_USER -user memory_object_default_user.c -server memory_object_default_server.c memory_object_default.defs
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -user exc_user.c -server exc_server.c exc.defs
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -DKERNEL_SERVER -server mach_host_server.c mach_host.defs
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -user device_user.c -server device_server.c device.defs
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -DKERNEL_SERVER -server monitor_server.c monitor.defs
+rm -rf ./mach_debug
+mkdir ./mach_debug
+cp -p ../../mach_debug/mach_debug_types.defs  ../../mach_debug/mach_debug.defs ./mach_debug/
+cp -p ../../mach_debug/Makefile ./mach_debug/
+cd ./mach_debug && make && touch ../migdebugfiles
+LPATH=$LPATH:/usr/mach/lib:/usr/lib:/lib PATH=$PATH:/usr/mach/bin:/usr/bin mig -I.. -DKERNEL -DKERNEL_SERVER -server mach_debug_server.c -user /dev/null -header /dev/null mach_debug.defs
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/btptes.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/tables.c;  ;  ;  
+cc -c -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL  ../../machine/genassym.c
+cc genassym.o
+./a.out > assym.s; rm -f a.out
+cat assym.s ../../machine/start.s  ../../machine/locore.s ../../machine/cswitch.s >locore.tmp
+mv locore.tmp locore.s
+The hack below should get fixed sometime.
+cp /dev/null ioconf.c
+cc -ES -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I../machine locore.s >locore.i ;  as -o locore.o locore.i;  rm -f locore.i
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/cmu_syscalls.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_main.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_sysent.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_acct.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_clock.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_descrip.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_exec.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_exit.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_fork.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_mman.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_proc.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_prot.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_resource.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_sig.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_subr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_synch.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_time.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_xxx.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/mach_process.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/mach_signal.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/quota_sys.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/subr_log.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/subr_prf.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/subr_rmap.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/subr_xxx.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/sys_generic.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/sys_inode.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/sys_socket.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/tty.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/tty_cmupty.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/tty_conf.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/tty_pty.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/tty_subr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/tty_tty.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_alloc.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_bio.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_bmap.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_disksubr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_fio.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_inode.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_mount.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_namei.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_physio.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_subr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_syscalls.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_tables.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/ufs_xxx.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/uipc_domain.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/uipc_mbuf.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/uipc_proto.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/uipc_socket.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/uipc_socket2.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/uipc_syscalls.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/uipc_usrreq.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../builtin/device_pager.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../builtin/inode_pager.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../builtin/ux_exception.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../conf/param.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ast.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/clock_prim.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/debug.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/exception.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/host.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/iprintf.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/lock.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/mach_factor.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_basics.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_copyin.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_copyout.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_host.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_kport.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_kset.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_pobj.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_port.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_tt.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_globals.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_mports.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_prims.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/ipc_ptraps.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/kalloc.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/mach_net.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/mach_timedev.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/mach_user_internal.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/machine.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/mfs_prim.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/mig_support.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/parallel.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/processor.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/queue.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/sched_prim.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/slave.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/syscall_emulation.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/syscall_subr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/syscall_sw.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/task.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/thread.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/thread_swap.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/timer.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../kern/zalloc.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse mach/exc_server.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse mach/exc_user.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse mach/mach_host_server.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse mach/mach_server.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse mach/memory_object_default_user.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse mach/memory_object_user.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse mach_debug/mach_debug_server.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/af.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/dli.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/if.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/if_loop.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/if_sl.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/slcompress.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/netisr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/raw_cb.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/raw_usrreq.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../net/route.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/if_ether.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/igmp.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/in.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/in_pcb.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/in_proto.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/ip_icmp.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/ip_input.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/ip_mroute.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/ip_output.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/raw_ip.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/tcp_debug.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/tcp_input.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/tcp_output.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/tcp_subr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/tcp_timer.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/tcp_usrreq.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../netinet/udp_usrreq.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_control.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_descrip.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_init.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_kern.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_socket.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_subr.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_syscalls.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../rfs/rfs_ticket.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/memory_object.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/vm_fault.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/vm_init.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/vm_kern.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/vm_map.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/vm_object.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/vm_pageout.c;  ;  ;  
+cc -c -O -MD -I. -I../../sys -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../vm/vm_resident.c;  ;  ;  
