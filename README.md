@@ -20,15 +20,11 @@ you have 3 build scripts:
  
 Currently the following cant be built:
 
-fd.o
+locore.o
 
-hd.o
+copy_user.o
 
-kd.o
-
-kdasm.o
-
-kd_event.o
+All the MIG bits...
 
 The environment was prepped and MiG'd under a native machine.  The only drawback is that the Mach bootloader doesn't like the Linux a.out linker.  So you need to get the objects into Mach to do a native link.  Once that's done it'll boot.
 
