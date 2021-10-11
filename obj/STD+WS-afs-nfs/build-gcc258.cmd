@@ -2,16 +2,16 @@ gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DIN
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/tables.c
 
 
-@REM cat assym.s ../../machine/start.s  ../../machine/locore.s ../../machine/cswitch.s >locore.tmp
+@REM cat assym.s ../../i386/start.s  ../../i386/locore.s ../../i386/cswitch.s >locore.tmp
 @REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I../machine locore.s >locore.i 
-@REM as -O2 locore.o locore.i
+@REM as -o locore.o locore.i
 cat assym.s ../../i386/start.s  ../../i386/locore.s ../../i386/cswitch.s >locore.tmp
 cpp -nostdinc -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I. -I..\.. locore.tmp | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > lowlow.i
 @REM a386 lowlow.i -o locore.o
 a386 locore.i -o locore.o
 @REM rm -f locore.i
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/cmu_syscalls.c
-gcc -c -nostdinc -O -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_main.c
+gcc -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_main.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_sysent.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_acct.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/kern_clock.c
@@ -182,12 +182,12 @@ gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DIN
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/kdb/utls.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/clock.c
 @REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/copy_user.s >copy_user.i
-@REM as -O2 copy_user.o copy_user.i
+@REM as -o copy_user.o copy_user.i
 @REM rm -f copy_user.i
 uudecode copyuser.txt
 a386 copy_user.i -o copy_user.o
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/fpsup.c
-@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/fp/FPU_start.s >FPU_start.i ;  as -O2 FPU_start.o FPU_start.i;  rm -f FPU_start.i
+@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/fp/FPU_start.s >FPU_start.i ;  as -o FPU_start.o FPU_start.i;  rm -f FPU_start.i
 cpp -nostdinc -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I. -I..\.. ../../i386/fp/FPU_start.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > FPU_start.i
 a386 FPU_start.i -o FPU_start.o
 rm -f arith.o
@@ -214,11 +214,10 @@ rm -f trans.o
 uudecode ../../i386/fp/trans.b
 @REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/fp/FPU_end.s >FPU_end.i ;  as -o FPU_end.o FPU_end.i;  rm -f FPU_end.i
 cpp -nostdinc -I..\.. ../../i386/fp/FPU_end.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > FPU_end.i
-a386 -o FPU_end.o FPU_end.i
-@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/gcc.s >gcc.i ;  as -O2 gcc.o gcc.i;  rm -f gcc.i
+@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/gcc.s >gcc.i ;  as -o gcc.o gcc.i;  rm -f gcc.i
 cpp -nostdinc -I..\.. ../../i386/gcc.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > gcc.i
 a386 -o gcc.o gcc.i
-a386 FPU_end.i -O2 FPU_end.o
+a386 FPU_end.i -o FPU_end.o
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/i386_init.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/pic.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/pit.c
@@ -226,14 +225,14 @@ gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DIN
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/kdb.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/machdep.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/mem.c
-@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/ntoh.s >ntoh.i ;  as -O2 ntoh.o ntoh.i;  rm -f ntoh.i
+@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/ntoh.s >ntoh.i ;  as -o ntoh.o ntoh.i;  rm -f ntoh.i
 cpp -nostdinc -I..\.. ../../i386/ntoh.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > ntoh.i
 a386 ntoh.i -o ntoh.o
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/pcb.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/phys.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/pmap.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/sys_machdep.c
-@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/str.s >str.i ;  as -O2 str.o str.i;  rm -f str.i
+@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/str.s >str.i ;  as -o str.o str.i;  rm -f str.i
 cpp -nostdinc -I..\.. ../../i386/str.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > str.i
 a386 str.i -o str.o
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/trap.c
@@ -245,18 +244,26 @@ gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DIN
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -D__GNUC__ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/com.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/lpr.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/conf.c
-gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/fd.c
-gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/hd.c
+@REM gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/fd.c
+gcc-258_old -c -nostdinc -E -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/fd.c | sed -e "s/( v )<<8)/('v')<<8)/g"  > fd.i
+gcc-258_old -c -nostdinc -O2 fd.i
+@REM gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/hd.c
+gcc-258_old -c -nostdinc -E -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/hd.c | sed -e "s/( v )<<8)/('v')<<8)/g"  > hd.i
+gcc-258_old -c -nostdinc -O2 hd.i
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/iopl.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/if_par.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/if_3c501.c
-gcc2 -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/if_pc586.c
+gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/if_pc586.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/if_ns8390.c
-gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd.c
-@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386at/kdasm.s >kdasm.i ;  as -O2 kdasm.o kdasm.i;  rm -f kdasm.i
+@REM gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd.c
+gcc-258_old -c -nostdinc -E -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd.c | sed -e "s/( k )<<8)/('k')<<8)/g"  > kd.i
+gcc-258_old -c -nostdinc -O2 kd.i
+@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386at/kdasm.s >kdasm.i ;  as -o kdasm.o kdasm.i;  rm -f kdasm.i
 cpp -nostdinc -I..\.. ../../i386at/kdasm.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > kdasm.i
 a386 kdasm.i -o kdasm.o
-gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd_event.c
+@REM gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd_event.c
+gcc-258_old -c -nostdinc -E -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd_event.c | sed -e "s/( K )<<8)/('K')<<8)/g"  > kd_event.i
+gcc-258_old -O2 -c kd_event.i
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd_mouse.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/kd_queue.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/pic_isa.c
@@ -264,9 +271,10 @@ gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DIN
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386at/wt.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/swapgeneric.c -o vmunix.swap
 gcc-258_old -c vers.c
-copy old\fd.o
-copy old\hd.o
-copy old\kd.o
-copy old\kdasm.o
-copy old\kd_event.o
+@REM copy old\fd.o
+@REM copy old\hd.o
+@REM copy old\kd.o
+@REM copy old\kdasm.o
+@REM copy old\kd_event.o
+@REM copy old\vmunix.swap
 call ll.cmd
