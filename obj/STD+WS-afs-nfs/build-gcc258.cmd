@@ -7,9 +7,10 @@ gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DIN
 @REM as -o locore.o locore.i
 cat assym.s ../../i386/start.s  ../../i386/locore.s ../../i386/cswitch.s >locore.tmp
 cpp -nostdinc -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I. -I..\.. locore.tmp | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > lowlow.i
-@REM a386 lowlow.i -o locore.o
+a386 lowlow.i -o locore.o
+@REM the lowlow just hangs trying to mount root
 a386 locore.i -o locore.o
-@REM rm -f locore.i
+@REM rm -f lowlow.i
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/cmu_syscalls.c
 gcc -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_main.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_sysent.c
@@ -181,11 +182,9 @@ gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DIN
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/kdb/tbls.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/kdb/utls.c
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/clock.c
-@REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/copy_user.s >copy_user.i
-@REM as -o copy_user.o copy_user.i
-@REM rm -f copy_user.i
-uudecode copyuser.txt
+cpp -nostdinc -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I. -I..\..  ../../i386/copy_user.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # >copy_user.i
 a386 copy_user.i -o copy_user.o
+rm -f copy_user.i
 gcc-258_old -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../i386/fpsup.c
 @REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER ../../i386/fp/FPU_start.s >FPU_start.i ;  as -o FPU_start.o FPU_start.i;  rm -f FPU_start.i
 cpp -nostdinc -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I. -I..\.. ../../i386/fp/FPU_start.s | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > FPU_start.i
