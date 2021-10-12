@@ -1,1 +1,1 @@
-#define NPC586 1
+#define NPC586 0

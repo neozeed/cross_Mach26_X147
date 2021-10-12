@@ -5,10 +5,10 @@ gcc2 -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMA
 @REM cat assym.s ../../i386/start.s  ../../i386/locore.s ../../i386/cswitch.s >locore.tmp
 @REM cc -ES -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I../machine locore.s >locore.i 
 @REM as -o locore.o locore.i
-cat assym.s ../../i386/start.s  ../../i386/locore.s ../../i386/cswitch.s >locore.tmp
-cpp -nostdinc -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I. -I..\.. locore.tmp | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > lowlow.i
+cat assym.s ../../i386/start.s  ../../i386/locore.s ../../i386/cswitch.s >locore.i
+cpp -nostdinc -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -DASSEMBLER -DLOCORE -I. -I..\.. locore.i | sed -e 's/_\ /_/g'| sed -e 's/\ ;/;/g' | sed -e 's/\ :/:/g' |grep -v # > lowlow.i
 @REM a386 lowlow.i -o locore.o
-a386 locore.i -o locore.o
+a386 ..\..\i386\locore.i -o locore.o
 @REM rm -f locore.i
 gcc2 -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/cmu_syscalls.c
 gcc -c -nostdinc -O2 -I. -I../../sys -I../.. -I../../root_fs/ -DCMU -DINET -DMACH -DAT386 -DCMUCS -DKERNEL -fno-function-cse ../../bsd/init_main.c

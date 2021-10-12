@@ -1738,7 +1738,7 @@ ENTRY(outb)				/  7 /
 	ret				/  7 /
 /					------
 /					  26
-ENTRY(outw)				/  7 /	outw ( port#, data )
+ENTRY(outw)				/  7 /	outw ( port_no, data )
 	movw	PORT(%esp), %dx		/  4 /
 	movw	VAL(%esp), %ax		/  4 /
 	data16				
@@ -1746,14 +1746,14 @@ ENTRY(outw)				/  7 /	outw ( port#, data )
 	ret				/  7 /
 /					------
 /					  26
-ENTRY(outl)				/  7 /	outl ( port#, data)
+ENTRY(outl)				/  7 /	outl ( port_no, data)
 	movw	PORT(%esp), %dx		/  4 /
 	movl	VAL(%esp), %eax		/  4 /
 	OUTL				/  4 /
 	ret				/  7 /
 /					------
 /					  26
-ENTRY(loutw)				/  7 /	loutw( port#, addr, cnt)
+ENTRY(loutw)				/  7 /	loutw( port_no, addr, cnt)
 	movl	%esi, %eax		/  ? /
 
 	movl	PORT(%esp),%edx		/  4 /
@@ -1769,7 +1769,7 @@ ENTRY(loutw)				/  7 /	loutw( port#, addr, cnt)
 	ret				/  7 /
 /					------
 /					  ??
-ENTRY(loutb)				/  7 /	loutw( port#, addr, cnt)
+ENTRY(loutb)				/  7 /	loutw( port_no, addr, cnt)
 	movl	%esi, %eax		/  ? /
 
 	movl	PORT(%esp),%edx		/  4 /
